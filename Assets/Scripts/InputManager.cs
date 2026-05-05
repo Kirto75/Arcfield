@@ -1,5 +1,9 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 public class InputManager : MonoBehaviour
 {
@@ -13,6 +17,19 @@ public class InputManager : MonoBehaviour
     //Limit raycast to speciefic layers
     [SerializeField]
     private LayerMask placementLayermask;
+
+    public event Action OnClicked, OnExit;
+
+    private void Update()
+    {
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+            OnClicked?.Invoke();
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            OnExit?.Invoke();
+    }
+
+    public bool IsPointerOverUI()
+        => EventSystem.current.IsPointerOverGameObject();
     
     //Check where the mouse points and return world position
     public Vector3 GetSelectedMapPosition()

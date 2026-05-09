@@ -19,14 +19,14 @@ public class PlacementSystem : MonoBehaviour
     [SerializeField]
     private GameObject gridVisualization;
 
-    private GridData gridData;
+    public GridData gridData;
     private Renderer previewRenderer;
 
     [SerializeField]
     private HeroPlacer heroPlacer;
     IBuildingState buildingState;
 
-    private void Start()
+    private void Awake()
     {
         StopPlacement();
         gridData = new GridData();

@@ -29,9 +29,14 @@ public class PlacementState : IBuildingState
         bool placementValidity = CheckPlacementValidity(gridPosition, selectedObjectIndex);
         if (placementValidity == false)
             return;
+        
+        //use CellToWorld to get y-axis to prevent the floating
+        Vector3 cellCenter = grid.GetCellCenterWorld(gridPosition);
+        Vector3 cellBase = grid.CellToWorld(gridPosition);
+        Vector3 spawnPosition = new Vector3(cellCenter.x, cellBase.y, cellCenter.z);
 
         //generates a new instance of the selected hero
-        int index = heroPlacer.PlaceObject(database.objectsData[selectedObjectIndex].Prefab, grid.CellToWorld(gridPosition));
+        int index = heroPlacer.PlaceObject(database.objectsData[selectedObjectIndex].Prefab, spawnPosition, grid, gridData);
 
         GridData selectedData = database.objectsData[selectedObjectIndex].ID == 0? gridData : gridData;
         selectedData.AddObjectAt(gridPosition, database.objectsData[selectedObjectIndex].Size, database.objectsData[selectedObjectIndex].ID, index);

@@ -56,6 +56,40 @@ public class GridData
             placedObjects.Remove(pos);
         }
     }
+    public void MoveObject(Vector3Int currentGridPosition, Vector3Int newGridPosition, Vector2Int objectSize)
+    {
+        //make sure there is an object on the starting tile 
+        if (placedObjects.ContainsKey(currentGridPosition) == false)
+        {
+            Debug.LogWarning($"No object found at {currentGridPosition} to move ");
+            return;
+        }
+
+
+        //save the data of the object we are going to move 
+        PlacementData dataToMove = placedObjects[currentGridPosition];
+
+        //clear its old position form the dictionary
+        RemoveObjectAt(currentGridPosition);
+
+        //calculate the new position
+        List<Vector3Int> newPositionToOccupy = CalculatePositions(newGridPosition, objectSize);
+
+        //update the data's internal list
+        dataToMove.occupiedPositions = newPositionToOccupy;
+
+
+        //register the object in the dictionary at its new position(to block those tiles)
+        foreach (var pos in newPositionToOccupy)
+        {
+            if (placedObjects.ContainsKey(pos))
+            {
+                Debug.Log($"Dictionary already contains this cell position {pos} while moving");
+            }
+            placedObjects[pos] = dataToMove;
+        }
+
+    }
 }
 
 public class PlacementData

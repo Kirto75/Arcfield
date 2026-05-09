@@ -3,25 +3,58 @@ using UnityEngine;
 
 public class HeroPlacer : MonoBehaviour
 {
-    private List<GameObject> placedGameObjects = new();
+    //we will use Dictionary instead of list
+    //the int is unique ID and the GameObject is the hero 
+    private Dictionary<int, GameObject> placedGameObjects = new();
 
-    public int PlaceObject(GameObject prefab, Vector3 position)
+    private int nextSpawnId = 0;
+
+    public int PlaceObject(GameObject prefab, Vector3 position, Grid grid, GridData gridData)
     {
         GameObject newObject = Instantiate(prefab);
-
-        //prints the indicator over the tile where the mouse is 
         newObject.transform.position = position;
-        
-        placedGameObjects.Add(newObject);
 
-        return placedGameObjects.Count - 1;
+        //Hand the grid date to the hero
+        HeroController controller = newObject.GetComponent<HeroController>();
+        if (controller != null)
+        {
+            controller.grid = grid;
+            controller.gridData = gridData;
+        }
+        //assign the unique id
+        int currentId = nextSpawnId;
+        
+        //add it to the dictionary
+        placedGameObjects.Add(currentId, newObject);
+
+        //increment the unique id to preserve uniqueness
+        nextSpawnId++ ;
+
+        //return unique id insetad of list index
+        return currentId ;
     }
 
-    public void RemoveObjectAt(int gameObjectIndex)
+    public void RemoveObjectAt(int uniqueId)
     {
-        if (placedGameObjects.Count <= gameObjectIndex || placedGameObjects[gameObjectIndex] == null)
+
+        //safety check 
+        if (placedGameObjects.ContainsKey(uniqueId) == false)
+        {
             return;
-        Destroy(placedGameObjects[gameObjectIndex]);
-        placedGameObjects[gameObjectIndex] = null;
+        }
+
+        Destroy(placedGameObjects[uniqueId]);
+
+        //remove the entry from the dictionary 
+        placedGameObjects.Remove(uniqueId);
+    }
+    //Fetch a spawned unit using its ID
+    public GameObject GetPlacedObject(int uniqueId)
+    {
+        if (placedGameObjects.ContainsKey(uniqueId))
+        {
+            return placedGameObjects[uniqueId];
+        }
+        return null;
     }
 }

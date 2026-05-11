@@ -12,10 +12,16 @@ public class Health : MonoBehaviour
     public Slider healthSlider ;
     public Image fillImage ;
 
+    private HeroController heroController;
+
+    public GameManager GameManager;
+
     void Start()
     {
         // Set health to full at start
         currentHelth = maxHealth ;
+        GameManager = GetComponent<GameManager>();
+        heroController = GetComponent<HeroController>();
         
         if (healthSlider != null)
         {
@@ -61,10 +67,33 @@ public class Health : MonoBehaviour
     }
     public void Die()
     {
+        if (IsDead) return;
 
-        Debug.Log(gameObject +"has been defeated");
-        //Die Animation
+        IsDead = true;
+
+        Debug.Log(gameObject + " has been defeated");
+
+        if (heroController != null)
+        {
+            heroController.ChangeState(HeroController.HeroState.Dead);
+        }
+
+        Grid grid = heroController.grid;
+
+        if (grid != null && heroController.gridData != null)
+        {
+            Vector3Int cell = grid.WorldToCell(transform.position);
+
+            heroController.gridData.ClearArea(cell, Vector2Int.one);
+        }
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.CheckForGameOver();
+        }
     }
+
+    public bool IsDead { get; private set; }
 
 
 }

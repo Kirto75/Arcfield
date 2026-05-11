@@ -90,6 +90,22 @@ public class GridData
         }
 
     }
+
+        public void ClearArea(Vector3Int position, Vector2Int size)
+    {
+        for (int x = 0; x < size.x; x++)
+        {
+            for (int y = 0; y < size.y; y++)
+            {
+                Vector3Int tilePosition = position + new Vector3Int(x, 0, y);
+
+                if (placedObjects.ContainsKey(tilePosition))
+                {
+                    placedObjects.Remove(tilePosition);
+                }
+            }
+        }
+    }
 }
 
 public class PlacementData

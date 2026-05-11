@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor.ShortcutManagement;
 using UnityEngine;
 
 public class HeroController : MonoBehaviour
@@ -36,6 +35,12 @@ public class HeroController : MonoBehaviour
 
     private Animator anim;
     private Vector3Int currentGridPosition;
+
+    [Header("Combat")]
+    public float attackDamage = 1f;
+    public float attackCooldown = 1f;
+
+    private float nextAttackTime;
 
     void Start()
     {
@@ -177,13 +182,42 @@ public class HeroController : MonoBehaviour
     }
     public void UpdateAttackState()
     {
-        //the target died?
-        if (currentTarget == null)
+        // Target disappeared or died
+        Health targetHealth = currentTarget.GetComponent<Health>();
+
+        if (currentTarget == null || targetHealth == null || targetHealth.IsDead)
         {
+            currentTarget = null;
             ChangeState(HeroState.Idle);
             return;
         }
-        anim.SetTrigger("isAttacking");
+
+        // Check distance again
+        float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
+
+        // Enemy moved away -> chase again
+        if (distanceToTarget > attackRange)
+        {
+            ChangeState(HeroState.Chase);
+            return;
+        }
+
+        // Attack cooldown
+        if (Time.time >= nextAttackTime)
+        {
+            nextAttackTime = Time.time + attackCooldown;
+
+            // Play animation
+            anim.SetTrigger("isAttacking");
+
+            // Damage target
+            targetHealth = currentTarget.GetComponent<Health>();
+
+            if (targetHealth != null)
+            {
+                targetHealth.TakeDamage(attackDamage);
+            }
+        }
     }
 
     public void FindClosestEnemy()

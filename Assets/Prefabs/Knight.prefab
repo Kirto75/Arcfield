@@ -532,6 +532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92a720421a1871b46b225313b9960f91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HeroController
+  myTeam: 0
   currentState: 0
   moveSpeed: 1
   attackRange: 1

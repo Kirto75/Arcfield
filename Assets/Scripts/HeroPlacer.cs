@@ -11,6 +11,7 @@ public class HeroPlacer : MonoBehaviour
 
     public int PlaceObject(GameObject prefab, Vector3 position, Grid grid, GridData gridData)
     {
+        Debug.Log("Spawning hero");
         GameObject newObject = Instantiate(prefab);
         newObject.transform.position = position;
 
